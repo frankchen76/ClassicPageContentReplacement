@@ -61,6 +61,7 @@ namespace ClassicPageContentReplacement
                         bool pageChanged = false;
                         file.CheckOut();
 
+                        //Update PublishingPageContent
                         string pageContent = file.ListItemAllFields["PublishingPageContent"].ToString();
                         if (pageContent.IndexOf(searchKeyword, StringComparison.CurrentCultureIgnoreCase) != -1)
                         {
