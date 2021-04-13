@@ -14,6 +14,7 @@ namespace ClassicPageContentReplacement
     {
         static void Main(string[] args)
         {
+            TestClassicPage();
         }
         private static ClientContext GetClientContext(string url, string credentialStoreName = "SPO-M365x725618")
         {
@@ -36,6 +37,7 @@ namespace ClassicPageContentReplacement
                 context.Load(files,
                     fs => fs.Include(f => f.ServerRelativeUrl),
                     fs => fs.Include(f => f.CheckedOutByUser.UserPrincipalName),
+                    fs => fs.Include(f => f.ListItemAllFields),
                     fs => fs.Include(f => f.CheckOutType));
                 context.ExecuteQuery();
 
@@ -58,6 +60,14 @@ namespace ClassicPageContentReplacement
                         //check out file for change. 
                         bool pageChanged = false;
                         file.CheckOut();
+
+                        string pageContent = file.ListItemAllFields["PublishingPageContent"].ToString();
+                        if (pageContent.IndexOf(searchKeyword, StringComparison.CurrentCultureIgnoreCase) != -1)
+                        {
+                            file.ListItemAllFields["PublishingPageContent"] = pageContent.Replace(searchKeyword, replaceKeyword);
+                            file.ListItemAllFields.Update();
+                            pageChanged = true;
+                        }
 
                         foreach (var wp in manager.WebParts)
                         {
